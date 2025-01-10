@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Digital Clock</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+   
+    <div class="digital-clock">
+      <h1>Digital Clock</h1>
+      <div id="current-time">00:00:00</div>
+      <button id="toggle-format">Switch to 12-Hour Format</button>
+    </div>
+
+    <div class="controls">
+      <div class="timer">
+        <h2>Timer</h2>
+        <div id="timer-display">00:00:00</div>
+        <div class="buttons">
+          <button id="start-timer">Start</button>
+          <button id="pause-timer">Pause</button>
+          <button id="stop-timer">Stop</button>
+        </div>
+      </div>
+
+      <div class="countdown">
+        <h2>Countdown</h2>
+        <input type="number" id="countdown-input" placeholder="Enter seconds (max 100000)" min="1" max="100000">
+        <div id="countdown-display">00:00:00</div>
+        <div class="buttons">
+          <button id="start-countdown">Start</button>
+          <button id="pause-countdown">Pause</button>
+          <button id="stop-countdown">Stop</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
