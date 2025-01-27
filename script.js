@@ -1,108 +1,151 @@
-// script.js
-const currentTimeDisplay = document.getElementById('current-time');
-const toggleFormatButton = document.getElementById('toggle-format');
-const timerDisplay = document.getElementById('timer-display');
-const startTimerButton = document.getElementById('start-timer');
-const pauseTimerButton = document.getElementById('pause-timer');
-const stopTimerButton = document.getElementById('stop-timer');
-const countdownInput = document.getElementById('countdown-input');
-const countdownDisplay = document.getElementById('countdown-display');
-const startCountdownButton = document.getElementById('start-countdown');
-const pauseCountdownButton = document.getElementById('pause-countdown');
-const stopCountdownButton = document.getElementById('stop-countdown');
+const currentTimeEl = document.getElementById("current-time");
+const toggleFormatBtn = document.getElementById("toggle-format");
 
 let is24HourFormat = true;
-let timerInterval;
-let countdownInterval;
-let timerSeconds = 0;
-let countdownSeconds = 0;
 
-// Update Current Time
-function updateCurrentTime() {
+function updateTime() {
   const now = new Date();
   let hours = now.getHours();
-  const minutes = String(now.getMinutes()).padStart(2, '0');
-  const seconds = String(now.getSeconds()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, "0");
+  const seconds = String(now.getSeconds()).padStart(2, "0");
 
   if (!is24HourFormat) {
-    const ampm = hours >= 12 ? 'PM' : 'AM';
+    const amPm = hours >= 12 ? "PM" : "AM";
     hours = hours % 12 || 12;
-    currentTimeDisplay.textContent = `${String(hours).padStart(2, '0')}:${minutes}:${seconds} ${ampm}`;
+    currentTimeEl.textContent = `${hours}:${minutes}:${seconds} ${amPm}`;
   } else {
-    currentTimeDisplay.textContent = `${String(hours).padStart(2, '0')}:${minutes}:${seconds}`;
+    currentTimeEl.textContent = `${String(hours).padStart(2, "0")}:${minutes}:${seconds}`;
   }
 }
 
-// Toggle Time Format
-toggleFormatButton.addEventListener('click', () => {
+toggleFormatBtn.addEventListener("click", () => {
   is24HourFormat = !is24HourFormat;
-  toggleFormatButton.textContent = is24HourFormat ? 'Switch to 12-Hour Format' : 'Switch to 24-Hour Format';
-  updateCurrentTime();
+  toggleFormatBtn.textContent = is24HourFormat ? "Switch to 12-hour" : "Switch to 24-hour";
 });
 
-// Timer Functions
+setInterval(updateTime, 1000);
+
+const timerDisplay = document.getElementById("timer-display");
+const startTimerBtn = document.getElementById("start-timer");
+const pauseTimerBtn = document.getElementById("pause-timer");
+const resetTimerBtn = document.getElementById("reset-timer");
+
+let timerInterval;
+let timerSeconds = 0;
+
 function updateTimerDisplay() {
-  const hours = Math.floor(timerSeconds / 3600);
-  const minutes = Math.floor((timerSeconds % 3600) / 60);
-  const seconds = timerSeconds % 60;
-  timerDisplay.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+  const hours = String(Math.floor(timerSeconds / 3600)).padStart(2, "0");
+  const minutes = String(Math.floor((timerSeconds % 3600) / 60)).padStart(2, "0");
+  const seconds = String(timerSeconds % 60).padStart(2, "0");
+  timerDisplay.textContent = `${hours}:${minutes}:${seconds}`;
 }
 
-startTimerButton.addEventListener('click', () => {
-  clearInterval(timerInterval);
-  timerInterval = setInterval(() => {
-    timerSeconds++;
-    updateTimerDisplay();
-  }, 1000);
+startTimerBtn.addEventListener("click", () => {
+  if (!timerInterval) {
+    timerInterval = setInterval(() => {
+      timerSeconds++;
+      updateTimerDisplay();
+    }, 1000);
+  }
 });
 
-pauseTimerButton.addEventListener('click', () => {
-  clearInterval(timerInterval);
+pauseTimerBtn.addEventListener("click", () => {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+    pauseTimerBtn.textContent = "Play"; 
+  } else {
+    timerInterval = setInterval(() => {
+      timerSeconds++;
+      updateTimerDisplay();
+    }, 1000);
+    pauseTimerBtn.textContent = "Pause"; 
+  }
 });
 
-stopTimerButton.addEventListener('click', () => {
+resetTimerBtn.addEventListener("click", () => {
   clearInterval(timerInterval);
+  timerInterval = null;
   timerSeconds = 0;
   updateTimerDisplay();
+  pauseTimerBtn.textContent = "Pause"; // Reset button text to "Pause"
 });
 
-// Countdown Functions
+const countdownInput = document.getElementById("countdown-input");
+const countdownDisplay = document.getElementById("countdown-display");
+const startCountdownBtn = document.getElementById("start-countdown");
+const pauseCountdownBtn = document.getElementById("pause-countdown");
+const resetCountdownBtn = document.getElementById("reset-countdown");
+
+let countdownInterval;
+let countdownSeconds = 0;
+
 function updateCountdownDisplay() {
-  const hours = Math.floor(countdownSeconds / 3600);
-  const minutes = Math.floor((countdownSeconds % 3600) / 60);
-  const seconds = countdownSeconds % 60;
-  countdownDisplay.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+  const hours = String(Math.floor(countdownSeconds / 3600)).padStart(2, "0");
+  const minutes = String(Math.floor((countdownSeconds % 3600) / 60)).padStart(2, "0");
+  const seconds = String(countdownSeconds % 60).padStart(2, "0");
+  countdownDisplay.textContent = `${hours}:${minutes}:${seconds}`;
 }
 
-startCountdownButton.addEventListener('click', () => {
-  const inputSeconds = parseInt(countdownInput.value, 10);
-  if (inputSeconds > 0 && inputSeconds <= 100000) {
-    countdownSeconds = inputSeconds;
-    clearInterval(countdownInterval);
+startCountdownBtn.addEventListener("click", () => {
+  if (!countdownInterval && countdownSeconds > 0) {
     countdownInterval = setInterval(() => {
       if (countdownSeconds > 0) {
         countdownSeconds--;
         updateCountdownDisplay();
       } else {
         clearInterval(countdownInterval);
-        alert('Countdown finished!');
+        countdownInterval = null;
       }
     }, 1000);
-  } else {
-    alert('Please enter a valid number of seconds (1-100000).');
   }
 });
 
-pauseCountdownButton.addEventListener('click', () => {
+pauseCountdownBtn.addEventListener("click", () => {
   clearInterval(countdownInterval);
+  countdownInterval = null;
 });
 
-stopCountdownButton.addEventListener('click', () => {
+resetCountdownBtn.addEventListener("click", () => {
   clearInterval(countdownInterval);
-  countdownSeconds = 0;
+  countdownInterval = null;
+  countdownSeconds = parseInt(countdownInput.value) || 0;
   updateCountdownDisplay();
 });
 
-// Initialize
-setInterval(updateCurrentTime, 1000);
-updateCurrentTime();
+countdownInput.addEventListener("input", () => {
+  countdownSeconds = parseInt(countdownInput.value) || 0;
+  updateCountdownDisplay();
+});
+
+updateTimerDisplay();
+updateCountdownDisplay();
+
+const currentTimeBtn = document.getElementById("current-time-btn");
+const timerBtn = document.getElementById("timer-btn");
+const countdownBtn = document.getElementById("countdown-btn");
+
+const modes = {
+  "current-time-mode": document.getElementById("current-time-mode"),
+  "timer-mode": document.getElementById("timer-mode"),
+  "countdown-mode": document.getElementById("countdown-mode"),
+};
+
+currentTimeBtn.addEventListener("click", () => {
+  setActiveMode("current-time-mode");
+});
+
+timerBtn.addEventListener("click", () => {
+  setActiveMode("timer-mode");
+});
+
+countdownBtn.addEventListener("click", () => {
+  setActiveMode("countdown-mode");
+});
+
+function setActiveMode(modeId) {
+  Object.values(modes).forEach((mode) => {
+    mode.classList.remove("active");
+  });
+  modes[modeId].classList.add("active");
+}
